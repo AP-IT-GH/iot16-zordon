@@ -1,4 +1,4 @@
-# Internet of Things - [Zordon]
+# Internet of Things - [Zordon].
 ## Beschrijving Project
 ## Documentatie
 ## Groepsleden

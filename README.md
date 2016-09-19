@@ -1,4 +1,4 @@
-# Internet of Things - [EDI]
+# Internet of Things - [Zordon]
 ## Beschrijving Project
 ## Documentatie
 ## Groepsleden

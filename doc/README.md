@@ -1,11 +1,17 @@
 # Internet of Things - [Zordon]
 Documentatie voor het project voor het vak Internet of Things.
 ## Projectplan
-** Team: ** Zordon
-** Project keuze: ** EDI
-** Project beschrijving: **
+**Team:** Zordon
+
+**Project keuze:** EDI
+
+**Project beschrijving:**
+
 Komt nog
-** Functionele analyse: **
+
+**Functionele analyse:**
+
 Komt nog
-** Planning sprint 1 & 2 **
+
+**Planning sprint 1 & 2**
 

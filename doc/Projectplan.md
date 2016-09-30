@@ -20,24 +20,24 @@ Dit is ons basis project, dit willen we uitgevoerd krijgen tegen het einde van h
 
 ## **Functionele analyse:**
 
-##### Analyse
+#### Analyse
 Wij gaan gebruik maken van volgende technologieën. Ten eerste gaan we een Android applicatie maken, dus maken we gebruik van Android. In deze applicatie gaan we gebruik maken van Cloud services, MQTT protocol en voor de Android applicatie gaan we gebruik maken van Android Cloud Speech API. Verder maken we gebruik van Wifi. Voor hardware maken we gebruik van een Wifi Relais Module (ESP8266). Om dan deze te programmeren maken we gebruik van een Arduino Nano. 
 
 ---
 
-##### High level blokdiagram
+#### High level blokdiagram
 
 ![alt text](https://sakshambhatla.files.wordpress.com/2014/08/mqtt_fig11-e1409777282815.jpg)
 
 ---
 
-##### Flowchart
+#### Flowchart
 
 ![alt text](https://github.com/AP-Elektronica-ICT/iot16-zordon/blob/master/doc/images/Flowchart.png?raw=true)
 
 ---
 
-##### Backlog
+#### Backlog
 
 **Als gebruiker wil ik via spraak apparaten kunnen activeren (Aanzetten)**  
 *Het activeren van de apparaten zal via MQTT naar de cloud gaan, de spraak detectie wordt gemaakt met behulp van Google Cloud Speech API*  

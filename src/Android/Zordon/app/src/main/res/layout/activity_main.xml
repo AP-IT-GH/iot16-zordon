@@ -10,23 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="powerrangers.zordon.MainActivity">
 
-
     <TextView
-        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="66dp"
-        android:id="@+id/GesprokenZin" />
-
-    <Button
-        android:text="Tap to record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="121dp"
-        android:id="@+id/PraatButton"
-        android:layout_below="@+id/GesprokenZin"
-        android:layout_centerHorizontal="true" />
-
+        android:text="Hello World!" />
 </RelativeLayout>

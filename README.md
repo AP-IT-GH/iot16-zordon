@@ -14,7 +14,10 @@ https://github.com/AP-Elektronica-ICT/iot16-zordon/blob/master/doc/Projectplan.m
 ## Documentatie
 https://github.com/AP-Elektronica-ICT/iot16-zordon/tree/master/doc
 ## Groepsleden
-Boyd Franken
-Kenny Guldentops
-Gillian Lambrechts
-Jeroen Rietveld
+#####Boyd Franken
+
+#####Kenny Guldentops
+
+#####Gillian Lambrechts
+
+#####Jeroen Rietveld

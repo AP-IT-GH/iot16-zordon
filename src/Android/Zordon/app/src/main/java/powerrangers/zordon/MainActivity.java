@@ -98,6 +98,19 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     startActivityForResult(intent, RESULT_SPEECH);
                     GesprokenZin.setText("");
+
+                    String gesprokenpublish = GesprokenZin.getText().toString();
+                    int qos = 2;
+
+                    MqttMessage message = new MqttMessage(gesprokenpublish.getBytes());
+                    message.setQos(qos);
+                    message.setRetained(false);
+                    try {
+                        client.publish("Topic", message);
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+
                 } catch (ActivityNotFoundException a) {
                     Toast.makeText(getApplicationContext(),
                             "Your device doesn't support Speech to Text",
@@ -131,5 +144,31 @@ public class MainActivity extends AppCompatActivity {
         client.publish("ha", message);
     }
 
+    public void Connect(View view) {
+        try {
+            MqttConnectOptions options = new MqttConnectOptions();
+
+            options.setUserName(username);
+            options.setPassword(password.toCharArray());
+
+            IMqttToken token = client.connect(options);
+
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // We are connected
+                    Log.i("f", "GElukt");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Log.i("d", "GEfailed");
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

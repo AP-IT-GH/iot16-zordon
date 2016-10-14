@@ -52,7 +52,8 @@ void loop() {
       client.loop();
   }
 
-  Send();
+  //Send();
+  Recieve();
 }
 
 void Send(){
@@ -61,5 +62,22 @@ void Send(){
 
   delay(5000);
    client.publish("pLED","ON" );
+
   }
-//}
+
+  void Recieve(){
+
+                      
+      //  Serial.println("Recieving");
+        client.set_callback(callback);
+        client.subscribe("LED");
+    
+      }
+    
+      
+  
+  void callback(const MQTT::Publish& pub) {
+    Serial.println("Sub");
+}
+
+

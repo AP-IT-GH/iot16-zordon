@@ -3,8 +3,11 @@
 //#include "DHT.h"
 
 
-const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
-const char *pass =  "aphogeschool";   //
+//const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
+//const char *pass =  "aphogeschool";   //
+
+const char *ssid =  "telenet-079E9";   // cannot be longer than 32 characters!
+const char *pass =  "vJ1AXWtcf3Tz";   //
 
 const char *mqtt_server = "m21.cloudmqtt.com";
 const int mqtt_port = 12452;
@@ -14,6 +17,8 @@ const char *mqtt_client_name = "Weemo"; // Client connections cant have the same
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
+
+#define BUFFER_SIZE 100
 
 void setup() {
   // Setup console
@@ -56,12 +61,10 @@ void loop() {
   Recieve();
 }
 
-void Send(){
+void Send(String data){
 
     Serial.print("published data");
-
-  delay(5000);
-   client.publish("pLED","ON" );
+   client.publish("Android","LED " + data );
 
   }
 
@@ -77,7 +80,8 @@ void Send(){
       
   
   void callback(const MQTT::Publish& pub) {
-    Serial.println("Sub");
+    Send(pub.payload_string());
+    
 }
 
 

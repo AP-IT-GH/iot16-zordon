@@ -3,11 +3,9 @@
 //#include "DHT.h"
 
 
-//const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
-//const char *pass =  "aphogeschool";   //
+const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
+const char *pass =  "aphogeschool";   //
 
-const char *ssid =  "telenet-079E9";   // cannot be longer than 32 characters!
-const char *pass =  "vJ1AXWtcf3Tz";   //
 
 const char *mqtt_server = "m21.cloudmqtt.com";
 const int mqtt_port = 12452;

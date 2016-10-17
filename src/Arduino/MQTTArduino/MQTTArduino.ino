@@ -13,12 +13,16 @@ const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
 const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
 
+
+
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
 
 #define BUFFER_SIZE 100
 
 void setup() {
+
+  pinMode(LED_BUILTIN, OUTPUT);
   // Setup console
   Serial.begin(115200);
   delay(10);
@@ -71,14 +75,26 @@ void Send(String data){
                       
       //  Serial.println("Recieving");
         client.set_callback(callback);
-        client.subscribe("LED");
+        client.subscribe("kitchen");
     
       }
     
       
   
   void callback(const MQTT::Publish& pub) {
-    Send(pub.payload_string());
+    String message = (pub.payload_string());
+    message.trim();
+    Send(message);
+
+    if (message == "on") {
+      digitalWrite(LED_BUILTIN, HIGH);
+      
+    }
+    
+    if (message == "off") {
+      digitalWrite(LED_BUILTIN, LOW);
+      
+    }
     
 }
 

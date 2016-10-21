@@ -37,12 +37,16 @@ public class MainActivity extends AppCompatActivity {
     String username = "xnkcayag";
     String password = "DtCGtuL2kVfk";
     String server = "ssl://m21.cloudmqtt.com:22452";
+    String topic = "Android";
+    String newmessage;
+    int qos = 0;
     String clientId = MqttClient.generateClientId();
     public MqttAndroidClient client;
 
     protected static final int RESULT_SPEECH = 1;
     private Button PraatButton;
     private TextView GesprokenZin;
+    Boolean send = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,9 @@ public class MainActivity extends AppCompatActivity {
         GesprokenZin = (TextView) findViewById(R.id.GesprokenZin);
         PraatButton = (Button) findViewById(R.id.PraatButton);
 
-        client = new MqttAndroidClient(this.getApplicationContext(), server,clientId);
+
+        client = new MqttAndroidClient(this.getApplicationContext(), server, clientId);
+
         try {
             MqttConnectOptions options = new MqttConnectOptions();
 
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // We are connected
                     Log.i("f", "GElukt");
+
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
@@ -74,9 +81,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("d", "GEfailed");
                 }
             });
+
         } catch (MqttException e) {
             e.printStackTrace();
         }
+
+
 
         if (client.isConnected() == true){
             TextView statusTxt = (TextView) findViewById(R.id.StatusLabel);
@@ -89,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("Status", "Connected");
         }
 
+
         PraatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,19 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     startActivityForResult(intent, RESULT_SPEECH);
                     GesprokenZin.setText("");
-
-                    String gesprokenpublish = GesprokenZin.getText().toString();
-                    int qos = 2;
-
-                    MqttMessage message = new MqttMessage(gesprokenpublish.getBytes());
-                    message.setQos(qos);
-                    message.setRetained(false);
-                    try {
-                        client.publish("Topic", message);
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-
                 } catch (ActivityNotFoundException a) {
                     Toast.makeText(getApplicationContext(),
                             "Your device doesn't support Speech to Text",
@@ -128,20 +126,47 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case RESULT_SPEECH: {
                 if (resultCode == RESULT_OK && null != data) {
-                    ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    ArrayList<String> text = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     GesprokenZin.setText(text.get(0));
+
+                    String gesprokenpublish = GesprokenZin.getText().toString();
+
+                    if (gesprokenpublish.contains("keuken")) {topic = "kitchen"; send = true;}
+                    else{topic ="kappa"; newmessage="pride"; send = false;}
+
+                    if (gesprokenpublish.contains("aan")) {newmessage = "on"; send = true;}
+                    else if (gesprokenpublish.contains("uit")) { newmessage = "off"; send = true;}
+                    else{topic ="kappa"; newmessage="pride"; send = false;}
+
+                    if(send){
+                        MqttMessage message = new MqttMessage(newmessage.getBytes());
+                        message.setQos(qos);
+                        message.setRetained(false);
+                        try {
+                            client.publish(topic, message);
+                        } catch (MqttException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
                 }
                 break;
             }
         }
     }
     public void SendMessage(View view) throws MqttException {
+        System.out.println("Message Arrived: " );
+        
         int qos = 2;
-        String content      = "llo";
+        String content      = "Aan";
         MqttMessage message = new MqttMessage(content.getBytes());
         message.setQos(qos);
         message.setRetained(false);
-        client.publish("ha", message);
+        client.publish("Keuken", message);
+
+
     }
 
     public void Connect(View view) {
@@ -170,5 +195,4 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 }

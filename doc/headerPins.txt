@@ -1,0 +1,5 @@
+L2
+R
+GND
+? (waarschijnlijk vcc)
+VCC

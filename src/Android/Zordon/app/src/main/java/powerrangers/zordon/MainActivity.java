@@ -44,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
     public MqttAndroidClient client;
 
     protected static final int RESULT_SPEECH = 1;
-    private Button PraatButton;
+    private ImageButton PraatButton;
     private TextView GesprokenZin;
+
     Boolean send = true;
 
     @Override
@@ -55,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnSendMsg = (Button) findViewById(R.id.SendMessage);
         GesprokenZin = (TextView) findViewById(R.id.GesprokenZin);
-        PraatButton = (Button) findViewById(R.id.PraatButton);
-
+        PraatButton = (ImageButton) findViewById(R.id.PraatButton);
 
         client = new MqttAndroidClient(this.getApplicationContext(), server, clientId);
 
@@ -160,11 +160,13 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Message Arrived: " );
         /*
         int qos = 2;
-        String content      = "Aan";
+        String content = "";
         MqttMessage message = new MqttMessage(content.getBytes());
         message.setQos(qos);
         message.setRetained(false);
-        client.publish("Keuken", message);*/
+        client.publish("kitchen", message);
+        */
+
         try {
             IMqttToken subToken = client.subscribe("Android", qos);
 
@@ -175,9 +177,6 @@ public class MainActivity extends AppCompatActivity {
                     TextView statusTxt = (TextView) findViewById(R.id.StatusLabel);
 
                     System.out.println("Message Arrived: " + message.getPayload() + " on tipic: " + topic.getBytes());
-
-
-
                 }
 
                 @Override

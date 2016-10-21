@@ -158,13 +158,38 @@ public class MainActivity extends AppCompatActivity {
     }
     public void SendMessage(View view) throws MqttException {
         System.out.println("Message Arrived: " );
-        
+        /*
         int qos = 2;
         String content      = "Aan";
         MqttMessage message = new MqttMessage(content.getBytes());
         message.setQos(qos);
         message.setRetained(false);
-        client.publish("Keuken", message);
+        client.publish("Keuken", message);*/
+        try {
+            IMqttToken subToken = client.subscribe("Android", qos);
+
+            subToken.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    MqttMessage message = new MqttMessage();
+                    TextView statusTxt = (TextView) findViewById(R.id.StatusLabel);
+
+                    System.out.println("Message Arrived: " + message.getPayload() + " on tipic: " + topic.getBytes());
+
+
+
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken,
+                                      Throwable exception) {
+                    Log.i("werkt","ni");
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
 
 
     }

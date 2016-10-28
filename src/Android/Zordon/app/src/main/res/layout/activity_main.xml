@@ -57,6 +57,19 @@
         android:text="Gesproken Zin"
         android:id="@+id/GesprokenZin"
         android:layout_below="@+id/SendMessage"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp" />
+        android:layout_marginTop="41dp"
+        android:layout_alignLeft="@+id/PraatButton"
+        android:layout_alignStart="@+id/PraatButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Latest message: "
+        android:id="@+id/SubMessage"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/GesprokenZin"
+        android:layout_alignRight="@+id/PraatButton"
+        android:layout_alignEnd="@+id/PraatButton" />
+
+
 </RelativeLayout>

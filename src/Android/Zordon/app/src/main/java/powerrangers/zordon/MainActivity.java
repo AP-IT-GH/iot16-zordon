@@ -1,9 +1,14 @@
 package powerrangers.zordon;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telecom.Connection;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
@@ -21,12 +26,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.util.Strings;
 
 import java.io.UnsupportedEncodingException;
 
@@ -34,18 +45,24 @@ import static android.R.attr.content;
 
 public class MainActivity extends AppCompatActivity {
 
+    MqttAndroidClient client;
+
+    String server = "ssl://m21.cloudmqtt.com:22452";
     String username = "xnkcayag";
     String password = "DtCGtuL2kVfk";
-    String server = "ssl://m21.cloudmqtt.com:22452";
+
     String topic = "Android";
     String newmessage;
-    int qos = 0;
+    int qos = 1;
     String clientId = MqttClient.generateClientId();
-    public MqttAndroidClient client;
+
+    String Kappatest = "TestTestTest";
+    private Adapter mAdapter;
 
     protected static final int RESULT_SPEECH = 1;
     private ImageButton PraatButton;
     private TextView GesprokenZin;
+    private TextView LatestMessage;
 
     Boolean send = true;
 
@@ -58,48 +75,7 @@ public class MainActivity extends AppCompatActivity {
         GesprokenZin = (TextView) findViewById(R.id.GesprokenZin);
         PraatButton = (ImageButton) findViewById(R.id.PraatButton);
 
-        client = new MqttAndroidClient(this.getApplicationContext(), server, clientId);
-
-        try {
-            MqttConnectOptions options = new MqttConnectOptions();
-
-            options.setUserName(username);
-            options.setPassword(password.toCharArray());
-
-            IMqttToken token = client.connect(options);
-
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    // We are connected
-                    Log.i("f", "GElukt");
-
-                }
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    // Something went wrong e.g. connection timeout or firewall problems
-                    Log.i("d", "GEfailed");
-                }
-            });
-
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-
-
-        if (client.isConnected() == true){
-            TextView statusTxt = (TextView) findViewById(R.id.StatusLabel);
-            statusTxt.setText("Status: Disconnected");
-            Log.i("Status", "Disconnected");
-        }
-        else if (client.isConnected() == false){
-            TextView statusTxt = (TextView) findViewById(R.id.StatusLabel);
-            statusTxt.setText("Status: Connected");
-            Log.i("Status", "Connected");
-        }
-
-
+        //Speech To Text API
         PraatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,6 +92,135 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+        //Connect to Mqtt
+        client = new MqttAndroidClient(this.getApplicationContext(), server, clientId);
+        client.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String server) {
+                if (reconnect) {
+                    addToHistory("Reconnected to: " + server);
+                    SubscribeToTopic();
+                } else {
+                    addToHistory("Connected to: " + server);
+                }
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+                addToHistory("The connection was lost.");
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                addToHistory("Incoming message: " + new String(message.getPayload()));
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setAutomaticReconnect(true);
+        mqttConnectOptions.setCleanSession(false);
+        mqttConnectOptions.setUserName(username);
+        mqttConnectOptions.setPassword(password.toCharArray());
+
+        try {
+            client.connect(mqttConnectOptions, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+                    disconnectedBufferOptions.setBufferEnabled(true);
+                    disconnectedBufferOptions.setBufferSize(100);
+                    disconnectedBufferOptions.setPersistBuffer(false);
+                    disconnectedBufferOptions.setDeleteOldestMessages(false);
+                    client.setBufferOpts(disconnectedBufferOptions);
+                    SubscribeToTopic();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    addToHistory("failed to connect to: " + server);
+                }
+            });
+        } catch (MqttException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void addToHistory(String mainText){
+        System.out.println("LOG: " + mainText);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    public void SubscribeToTopic(){
+        try {
+            client.subscribe(topic, 0, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    addToHistory("Subscribed!");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    addToHistory("Failed to subscribe");
+                }
+            });
+
+            // THIS DOES NOT WORK!
+            client.subscribe(topic, 0, new IMqttMessageListener() {
+                @Override
+                public void messageArrived(String topic, MqttMessage message) throws Exception {
+                    // message Arrived!
+                    System.out.println("Message: " + topic + " : " + new String(message.getPayload()));
+                    LatestMessage = (TextView) findViewById(R.id.SubMessage);
+                    LatestMessage.setText("Latest message from topic: " + topic + " : " + new String(message.getPayload()));
+                }
+            });
+
+        } catch (MqttException ex){
+            System.err.println("Exception whilst subscribing");
+            ex.printStackTrace();
+        }
+    }
+
+    public void publishMessage(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(Kappatest.getBytes());
+            client.publish(topic, message);
+            addToHistory("Message Published");
+            if(!client.isConnected()){
+                addToHistory(client.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -156,67 +261,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     public void SendMessage(View view) throws MqttException {
-        System.out.println("Message Arrived: " );
-        /*
-        int qos = 2;
-        String content = "";
-        MqttMessage message = new MqttMessage(content.getBytes());
-        message.setQos(qos);
-        message.setRetained(false);
-        client.publish("kitchen", message);
-        */
+        publishMessage();
 
-        try {
-            IMqttToken subToken = client.subscribe("Android", qos);
-
-            subToken.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    MqttMessage message = new MqttMessage();
-                    TextView statusTxt = (TextView) findViewById(R.id.StatusLabel);
-
-                    System.out.println("Message Arrived: " + message.getPayload() + " on tipic: " + topic.getBytes());
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken,
-                                      Throwable exception) {
-                    Log.i("werkt","ni");
-
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public void Connect(View view) {
-        try {
-            MqttConnectOptions options = new MqttConnectOptions();
-
-            options.setUserName(username);
-            options.setPassword(password.toCharArray());
-
-            IMqttToken token = client.connect(options);
-
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    // We are connected
-                    Log.i("f", "GElukt");
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    // Something went wrong e.g. connection timeout or firewall problems
-                    Log.i("d", "GEfailed");
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
     }
 }

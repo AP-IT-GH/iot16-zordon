@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
         mqttConnectOptions.setUserName(username);
+        mqttConnectOptions.setConnectionTimeout(240000);
         mqttConnectOptions.setPassword(password.toCharArray());
 
         try {
@@ -196,9 +198,18 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     // message Arrived!
+
+                    final MqttMessage test = message;
                     System.out.println("Message: " + topic + " : " + new String(message.getPayload()));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                     LatestMessage = (TextView) findViewById(R.id.SubMessage);
-                    LatestMessage.setText("Latest message from topic: " + topic + " : " + new String(message.getPayload()));
+                    LatestMessage.setText("Latest message: "+ new String(test.getPayload()));
+                            ImageView image = (ImageView) findViewById(R.id.imageView);
+                            image.setImageResource(R.mipmap.on);
+                        }
+                    });
                 }
             });
 

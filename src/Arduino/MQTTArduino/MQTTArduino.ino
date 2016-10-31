@@ -1,6 +1,5 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-//#include "DHT.h"
 
 
 const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
@@ -29,7 +28,6 @@ void setup() {
   Serial.println();
   Serial.println();
 
- //#dht.begin();
 }
 
 void loop() {

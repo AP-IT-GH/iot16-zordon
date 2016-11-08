@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton PraatButton;
     private TextView GesprokenZin;
     private TextView LatestMessage;
+    private TextView ConnectStatus;
 
     Boolean send = true;
 
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnSendMsg = (Button) findViewById(R.id.SendMessage);
         GesprokenZin = (TextView) findViewById(R.id.GesprokenZin);
         PraatButton = (ImageButton) findViewById(R.id.PraatButton);
+        ConnectStatus = (TextView) findViewById(R.id.StatusLabel);
 
         //Speech To Text API
         PraatButton.setOnClickListener(new View.OnClickListener() {
@@ -103,15 +105,18 @@ public class MainActivity extends AppCompatActivity {
             public void connectComplete(boolean reconnect, String server) {
                 if (reconnect) {
                     addToHistory("Reconnected to: " + server);
+                    ConnectStatus.setText("Status: Connected");
                     SubscribeToTopic();
                 } else {
                     addToHistory("Connected to: " + server);
+                    ConnectStatus.setText("Status: Connected");
                 }
             }
 
             @Override
             public void connectionLost(Throwable cause) {
                 addToHistory("The connection was lost.");
+                ConnectStatus.setText("Status: Disconnected");
             }
 
             @Override

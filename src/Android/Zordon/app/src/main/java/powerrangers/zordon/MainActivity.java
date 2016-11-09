@@ -212,7 +212,11 @@ public class MainActivity extends AppCompatActivity {
                     LatestMessage = (TextView) findViewById(R.id.SubMessage);
                     LatestMessage.setText("Latest message: "+ new String(test.getPayload()));
                             ImageView image = (ImageView) findViewById(R.id.imageView);
-                            image.setImageResource(R.mipmap.on);
+                            if(new String(test.getPayload()).contains("on"))
+                                image.setImageResource(R.mipmap.on);
+                            if(new String(test.getPayload()).contains("off"))
+                                image.setImageResource(R.mipmap.pixelbulbart);
+
                         }
                     });
                 }

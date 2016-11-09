@@ -3,16 +3,15 @@
 
 
 const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
-const char *pass =  "aphogeschool";   //
-
+const char *pass =  "aphogeschool";
 
 const char *mqtt_server = "m21.cloudmqtt.com";
 const int mqtt_port = 12452;
 const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
 const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
-String thisDevice = kitchen;
 
+String thisDevice = "kitchen"; // Subscribe to this topic and publish with this as context
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
@@ -21,7 +20,7 @@ PubSubClient client(wclient, mqtt_server, mqtt_port);
 
 void setup() {
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(D1, OUTPUT);
   // Setup console
   Serial.begin(115200);
   delay(10);
@@ -48,6 +47,7 @@ void loop() {
       if (client.connect(MQTT::Connect("arduino")
                          .set_auth(mqtt_user, mqtt_pass))) {
         Serial.println("Connected to MQTT server");
+        client.subscribe(thisDevice);
       } else {
         Serial.println("Could not connect to MQTT server");   
       }
@@ -73,7 +73,7 @@ void Send(String data){
                       
       //  Serial.println("Recieving");
         client.set_callback(callback);
-        client.subscribe("kitchen");
+        
     
       }
     
@@ -85,13 +85,22 @@ void Send(String data){
     Send(message);
 
     if (message == "on") {
-      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(D1, HIGH);
       
     }
     
-    if (message == "off") {
-      digitalWrite(LED_BUILTIN, LOW);
+    else if (message == "off") {
+      digitalWrite(D1, LOW);
       
+    }
+
+//Change the name of the device
+    else if(message.indexOf("cN") >= 0) {
+      client.unsubscribe(thisDevice);
+      thisDevice = message;
+      thisDevice.remove(0, 2);
+      Serial.print("changed name");
+      client.subscribe(thisDevice);
     }
     
 }

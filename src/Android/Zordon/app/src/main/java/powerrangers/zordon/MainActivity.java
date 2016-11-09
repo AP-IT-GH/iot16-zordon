@@ -280,6 +280,5 @@ public class MainActivity extends AppCompatActivity {
 
     public void SendMessage(View view) throws MqttException {
         publishMessage();
-
     }
 }

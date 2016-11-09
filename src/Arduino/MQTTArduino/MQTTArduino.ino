@@ -11,7 +11,7 @@ const int mqtt_port = 12452;
 const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
 const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
-
+String thisDevice = kitchen;
 
 
 WiFiClient wclient;
@@ -64,7 +64,7 @@ void loop() {
 void Send(String data){
 
     Serial.print("published data");
-   client.publish("Android","LED " + data );
+   client.publish("Android",thisDevice + " " + data );
 
   }
 

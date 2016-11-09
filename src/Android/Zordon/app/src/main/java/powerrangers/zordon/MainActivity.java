@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     int qos = 1;
     String clientId = MqttClient.generateClientId();
 
-    String Kappatest = "TestTestTest";
+    String Manueelsend = "test";
     private Adapter mAdapter;
 
     protected static final int RESULT_SPEECH = 1;
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
     public void publishMessage(){
         try {
             MqttMessage message = new MqttMessage();
-            message.setPayload(Kappatest.getBytes());
+            message.setPayload(Manueelsend.getBytes());
             client.publish(topic, message);
             addToHistory("Message Published");
             if(!client.isConnected()){
@@ -258,11 +258,11 @@ public class MainActivity extends AppCompatActivity {
                     String gesprokenpublish = GesprokenZin.getText().toString();
 
                     if (gesprokenpublish.contains("keuken")) {topic = "kitchen"; send = true;}
-                    else{topic ="kappa"; newmessage="pride"; send = false;}
+                    else{topic ="Kitchen"; newmessage="not understood"; send = false;}
 
                     if (gesprokenpublish.contains("aan")) {newmessage = "on"; send = true;}
                     else if (gesprokenpublish.contains("uit")) { newmessage = "off"; send = true;}
-                    else{topic ="kappa"; newmessage="pride"; send = false;}
+                    else{topic ="Kitchen"; newmessage="on or off"; send = false;}
 
                     if(send){
                         MqttMessage message = new MqttMessage(newmessage.getBytes());

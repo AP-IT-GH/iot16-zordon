@@ -12,7 +12,8 @@ const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
 const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
 
-String thisDevice = "kamertemperatuur"; // Subscribe to this topic and publish with this as context
+String thisDevice = "Android/kamertemperatuur"; // Subscribe to this topic and publish with this as context
+String keuken = "Android/kitchen";
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
@@ -58,14 +59,40 @@ void loop() {
   }
     int temperature = temp.getTemp(); 
     Send(temperature);
+    Receive();
     delay(10000);
-    
+
 }
 void Send(int data){
 
-    Serial.print("published data");
-   client.publish("Android/"+ thisDevice, String(data) );
+    Serial.println("published data");
+   client.publish(thisDevice, String(data) );
 
   }
 
+
+  void Receive(){
+
+                      
+      Serial.println("Receiving");
+        client.set_callback(callback);
+        
+    
+      }
+    
+      
+  
+  void callback(const MQTT::Publish& pub) {
+    String tmp = (pub.payload_string());
+
+    if (tmp.toInt() >= 24) {
+      client.publish(keuken, "on" );
+      
+    }
+    
+    else if (tmp.toInt() < 24) {
+    client.publish(keuken, "off" );
+      
+    }   
+}
   

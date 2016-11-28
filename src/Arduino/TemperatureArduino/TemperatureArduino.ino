@@ -64,7 +64,7 @@ void loop() {
 void Send(int data){
 
     Serial.print("published data");
-   client.publish(thisDevice, String(data) );
+   client.publish("Android/"+ thisDevice, String(data) );
 
   }
 

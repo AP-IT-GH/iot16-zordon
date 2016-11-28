@@ -53,49 +53,45 @@ void loop() {
         Serial.println("Could not connect to MQTT server");   
       }
     }
-
+    
     if (client.connected()){
       int temperature = temp.getTemp(); 
       Receive();
       Send(temperature);
       delay(10000);
       client.loop();  
-
     }
   }
-
 }
 void Send(int data){
 
-    Serial.println("published data");
+   Serial.println("published data");
    client.publish(thisDevice, String(data) );
 
   }
 
 
   void Receive(){
-
-                      
+                    
       Serial.println("Receiving");
-        client.set_callback(callback);
-        
-    
-      }
+      client.set_callback(callback);       
+  }
     
       
   
   void callback(const MQTT::Publish& pub) {
+    
     String tmp = (pub.payload_string());
     int temperature = temp.getTemp(); 
 
-    if (tmp.toInt() >= 24 || temperature >=24) {
-      client.publish(keuken, "on" );
+      if (tmp.toInt() >= 24 || temperature >=24) {
+        client.publish(keuken, "on" );
+        
+      }
       
-    }
-    
-    else if (tmp.toInt() < 24 || temperature < 24) {
-    client.publish(keuken, "off" );
-      
-    }   
-}
+      else if (tmp.toInt() < 24 || temperature < 24) {
+      client.publish(keuken, "off" );
+        
+      }   
+  }
   

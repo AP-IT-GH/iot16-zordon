@@ -54,13 +54,15 @@ void loop() {
       }
     }
 
-    if (client.connected())
-      client.loop();
+    if (client.connected()){
+      int temperature = temp.getTemp(); 
+      Receive();
+      Send(temperature);
+      delay(10000);
+      client.loop();  
+
+    }
   }
-    int temperature = temp.getTemp(); 
-    Send(temperature);
-    Receive();
-    delay(10000);
 
 }
 void Send(int data){
@@ -84,13 +86,14 @@ void Send(int data){
   
   void callback(const MQTT::Publish& pub) {
     String tmp = (pub.payload_string());
+    int temperature = temp.getTemp(); 
 
-    if (tmp.toInt() >= 24) {
+    if (tmp.toInt() >= 24 || temperature >=24) {
       client.publish(keuken, "on" );
       
     }
     
-    else if (tmp.toInt() < 24) {
+    else if (tmp.toInt() < 24 || temperature < 24) {
     client.publish(keuken, "off" );
       
     }   

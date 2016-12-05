@@ -1,3 +1,4 @@
+#include <Thermistor.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
@@ -11,26 +12,26 @@ const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
 const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
 
-String thisDevice = "kitchen"; // Subscribe to this topic and publish with this as context
+String thisDevice = "Android/kamertemperatuur"; // Subscribe to this topic and publish with this as context
+String keuken = "Android/kitchen";
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
 
 #define BUFFER_SIZE 100
+Thermistor temp(0);
+
 
 void setup() {
-
-  pinMode(D1, OUTPUT);
+  pinMode(A0, OUTPUT);
   // Setup console
   Serial.begin(115200);
   delay(10);
   Serial.println();
   Serial.println();
-
 }
-
 void loop() {
-  if (WiFi.status() != WL_CONNECTED) {
+    if (WiFi.status() != WL_CONNECTED) {
     Serial.print("Connecting to ");
     Serial.print(ssid);
     Serial.println("...");
@@ -52,57 +53,45 @@ void loop() {
         Serial.println("Could not connect to MQTT server");   
       }
     }
-
-    if (client.connected())
-      client.loop();
+    
+    if (client.connected()){
+      int temperature = temp.getTemp(); 
+      Receive();
+      Send(temperature);
+      delay(10000);
+      client.loop();  
+    }
   }
-
-  //Send();
-  Receive();
 }
+void Send(int data){
 
-void Send(String data){
-
-    Serial.print("published data");
-   client.publish("Android",thisDevice + " " + data );
+   Serial.println("published data");
+   client.publish(thisDevice, String(data) );
 
   }
+
 
   void Receive(){
-
-                      
-      //  Serial.println("Receiving");
-        client.set_callback(callback);
-        
-    
-      }
+                    
+      Serial.println("Receiving");
+      client.set_callback(callback);       
+  }
     
       
   
   void callback(const MQTT::Publish& pub) {
-    String message = (pub.payload_string());
-    message.trim();
-    Send(message);
-
-    if (message == "on") {
-      digitalWrite(D1, HIGH);
-      
-    }
     
-    else if (message == "off") {
-      digitalWrite(D1, LOW);
+    String tmp = (pub.payload_string());
+    int temperature = temp.getTemp(); 
+
+      if (tmp.toInt() >= 24 || temperature >=24) {
+        client.publish(keuken, "on" );
+        
+      }
       
-    }
-
-//Change the name of the device
-    else if(message.indexOf("cN") >= 0) {
-      client.unsubscribe(thisDevice);
-      thisDevice = message;
-      thisDevice.remove(0, 2);
-      Serial.print("changed name");
-      client.subscribe(thisDevice);
-    }
-    
-}
-
-
+      else if (tmp.toInt() < 24 || temperature < 24) {
+      client.publish(keuken, "off" );
+        
+      }   
+  }
+  

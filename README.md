@@ -16,6 +16,6 @@ https://github.com/AP-Elektronica-ICT/iot16-zordon/tree/master/doc
 
 #####Kenny Guldentops
 
-#####Gillian Lambrechts
+#####Gillian Lambrechtss
 
 #####Jeroen Rietveld

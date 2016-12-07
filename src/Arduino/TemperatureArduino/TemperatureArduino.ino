@@ -10,15 +10,16 @@ const char *mqtt_server = "m21.cloudmqtt.com";
 const int mqtt_port = 12452;
 const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
-const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
+const char *mqtt_client_name = "Weemos_Temp"; // Client connections cant have the same connection name
 
 String thisDevice = "Android/kamertemperatuur"; // Subscribe to this topic and publish with this as context
-String keuken = "Android/kitchen";
+String verwarming = "Android/verwarming";
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
 
 #define BUFFER_SIZE 100
+
 Thermistor temp(0);
 
 
@@ -35,6 +36,10 @@ void loop() {
     Serial.print("Connecting to ");
     Serial.print(ssid);
     Serial.println("...");
+    delay(50);
+      Serial.print("Client name is: ");
+      Serial.println(mqtt_client_name);
+          delay(50);
     WiFi.begin(ssid, pass);
 
     if (WiFi.waitForConnectResult() != WL_CONNECTED)
@@ -45,10 +50,13 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     if (!client.connected()) {
       Serial.println("Connecting to MQTT server");
-      if (client.connect(MQTT::Connect("arduino")
+      if (client.connect(MQTT::Connect(mqtt_client_name)
                          .set_auth(mqtt_user, mqtt_pass))) {
         Serial.println("Connected to MQTT server");
         client.subscribe(thisDevice);
+        Serial.println("Subscribed to: " + thisDevice);
+        client.subscribe(verwarming);
+        Serial.println("Subscribed to: " + verwarming);
       } else {
         Serial.println("Could not connect to MQTT server");   
       }
@@ -56,8 +64,9 @@ void loop() {
     
     if (client.connected()){
       int temperature = temp.getTemp(); 
-      Receive();
+                  Receive();
       Send(temperature);
+      Serial.println(temperature);
       delay(10000);
       client.loop();  
     }
@@ -65,7 +74,7 @@ void loop() {
 }
 void Send(int data){
 
-   Serial.println("published data");
+   Serial.println("Sending data");
    client.publish(thisDevice, String(data) );
 
   }
@@ -82,16 +91,18 @@ void Send(int data){
   void callback(const MQTT::Publish& pub) {
     
     String tmp = (pub.payload_string());
-    int temperature = temp.getTemp(); 
+    int temperature = temp.getTemp();
 
-      if (tmp.toInt() >= 24 || temperature >=24) {
-        client.publish(keuken, "on" );
-        
+     Serial.println(tmp + " " + temperature + " " + verwarming);
+
+      if (tmp.toInt() >= 25 || temperature >=25) {
+        client.publish(verwarming, "off" );
+             Serial.println(tmp + " " + temperature + " " + verwarming);
       }
       
-      else if (tmp.toInt() < 24 || temperature < 24) {
-      client.publish(keuken, "off" );
-        
+      else if (tmp.toInt() < 25 || temperature < 25) {
+      client.publish(verwarming, "on" );
+             Serial.println(tmp + " " + temperature + " " + verwarming);
       }   
   }
   

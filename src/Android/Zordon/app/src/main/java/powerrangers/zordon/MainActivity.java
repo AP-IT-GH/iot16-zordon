@@ -1,6 +1,7 @@
 package powerrangers.zordon;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telecom.Connection;
@@ -9,12 +10,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     String username = "xnkcayag";
     String password = "DtCGtuL2kVfk";
 
-    String topic = "Android";
+    String topic = "Android/#";
     String newmessage;
     int qos = 1;
     String clientId = MqttClient.generateClientId();
@@ -60,13 +64,22 @@ public class MainActivity extends AppCompatActivity {
     String Manueelsend = "test";
     private Adapter mAdapter;
 
+    private ListView lv;
+
+    String[] Places = {"keuken", "slaapkamer", "berging", "badkamer"};;
+
     protected static final int RESULT_SPEECH = 1;
     private ImageButton PraatButton;
     private TextView GesprokenZin;
     private TextView LatestMessage;
+    private TextView KamerTemp;
     private TextView ConnectStatus;
+    private Button Devices;
 
     Boolean send = true;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
         GesprokenZin = (TextView) findViewById(R.id.GesprokenZin);
         PraatButton = (ImageButton) findViewById(R.id.PraatButton);
         ConnectStatus = (TextView) findViewById(R.id.StatusLabel);
+        lv = (ListView) findViewById(R.id.lv);
+
+        //String[] array = getIntent().getStringArrayExtra("lijst");
+
+
 
         //Speech To Text API
         PraatButton.setOnClickListener(new View.OnClickListener() {
@@ -198,25 +216,32 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            // THIS DOES NOT WORK!
+            //Subscribe to all topics on Android
+            final MediaPlayer mp = MediaPlayer.create(this, R.raw.bell3);
             client.subscribe(topic, 0, new IMqttMessageListener() {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    // message Arrived!
-
                     final MqttMessage test = message;
-                    System.out.println("Message: " + topic + " : " + new String(message.getPayload()));
+
+                    System.out.println("Message: " + "Android/#" + " : " + new String(message.getPayload()));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                    LatestMessage = (TextView) findViewById(R.id.SubMessage);
-                    LatestMessage.setText("Latest message: "+ new String(test.getPayload()));
+                            //sensor
+                            KamerTemp = (TextView) findViewById(R.id.KamerTemp);
+                            KamerTemp.setText("Kamertemperatuur: "+ new String(test.getPayload()));
+
+                            //Stopcontact
+                            LatestMessage = (TextView) findViewById(R.id.SubMessage);
+                            LatestMessage.setText("Latest message: "+ new String(test.getPayload()));
                             ImageView image = (ImageView) findViewById(R.id.imageView);
                             if(new String(test.getPayload()).contains("on"))
                                 image.setImageResource(R.mipmap.on);
                             if(new String(test.getPayload()).contains("off"))
                                 image.setImageResource(R.mipmap.pixelbulbart);
-
+                            if(new String(test.getPayload()).contains("bel")){
+                                mp.start();
+                            }
                         }
                     });
                 }
@@ -257,12 +282,15 @@ public class MainActivity extends AppCompatActivity {
 
                     String gesprokenpublish = GesprokenZin.getText().toString();
 
-                    if (gesprokenpublish.contains("keuken")) {topic = "kitchen"; send = true;}
-                    else{topic ="Kitchen"; newmessage="not understood"; send = false;}
+                    if (gesprokenpublish.contains(Places[0])) {topic = "Android/kitchen"; send = true;}
+                    else if (gesprokenpublish.contains(Places[1])) {topic = "Android/slaapkamer"; send = true;}
+                    else if (gesprokenpublish.contains(Places[2])) {topic = "Android/berging"; send = true;}
+                    else if (gesprokenpublish.contains(Places[3])) {topic = "Android/badkamer"; send = true;}
+                    else{topic ="Not understood"; newmessage="Not understood"; send = false;}
 
                     if (gesprokenpublish.contains("aan")) {newmessage = "on"; send = true;}
                     else if (gesprokenpublish.contains("uit")) { newmessage = "off"; send = true;}
-                    else{topic ="Kitchen"; newmessage="on or off"; send = false;}
+                    else{topic ="Not understood"; newmessage="Not understood"; send = false;}
 
                     if(send){
                         MqttMessage message = new MqttMessage(newmessage.getBytes());
@@ -273,9 +301,7 @@ public class MainActivity extends AppCompatActivity {
                         } catch (MqttException e) {
                             e.printStackTrace();
                         }
-
                     }
-
                 }
                 break;
             }
@@ -284,5 +310,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void SendMessage(View view) throws MqttException {
         publishMessage();
+    }
+
+    public void Devices(View view) {
+        startActivity(new Intent(MainActivity.this, devices.class));
+
     }
 }

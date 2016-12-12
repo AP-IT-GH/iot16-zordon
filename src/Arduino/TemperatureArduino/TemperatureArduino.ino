@@ -49,7 +49,7 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED) {
     if (!client.connected()) {
-      Serial.println("Connecting to MQTT server");
+      Serial.print("Connecting to: "); Serial.println(mqtt_server);
       if (client.connect(MQTT::Connect(mqtt_client_name)
                          .set_auth(mqtt_user, mqtt_pass))) {
         Serial.println("Connected to MQTT server");
@@ -64,9 +64,8 @@ void loop() {
     
     if (client.connected()){
       int temperature = temp.getTemp(); 
-                  Receive();
-      Send(temperature);
-      Serial.println(temperature);
+      Receive();
+      Send(temperature -3);
       delay(10000);
       client.loop();  
     }
@@ -93,14 +92,15 @@ void Send(int data){
     String tmp = (pub.payload_string());
     int temperature = temp.getTemp();
 
-     Serial.println(tmp + " " + temperature + " " + verwarming);
+    temperature = temperature-3;
 
-      if (tmp.toInt() >= 25 || temperature >=25) {
+
+      if (tmp.toInt() >= 25-3 || temperature >=25-3) {
         client.publish(verwarming, "off" );
              Serial.println(tmp + " " + temperature + " " + verwarming);
       }
       
-      else if (tmp.toInt() < 25 || temperature < 25) {
+      else if (tmp.toInt() < 25-3 || temperature < 25-3) {
       client.publish(verwarming, "on" );
              Serial.println(tmp + " " + temperature + " " + verwarming);
       }   

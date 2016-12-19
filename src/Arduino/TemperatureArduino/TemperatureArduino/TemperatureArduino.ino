@@ -1,5 +1,5 @@
-#include <Thermistor.h>
 #include <ESP8266WiFi.h>
+#include <Thermistor.h>
 #include <PubSubClient.h>
 
 
@@ -25,6 +25,7 @@ Thermistor temp(0);
 
 void setup() {
   pinMode(A0, OUTPUT);
+  pinMode(D2, OUTPUT);
   // Setup console
   Serial.begin(115200);
   delay(10);
@@ -32,6 +33,7 @@ void setup() {
   Serial.println();
 }
 void loop() {
+  int temperature = temp.getTemp();
     if (WiFi.status() != WL_CONNECTED) {
     Serial.print("Connecting to ");
     Serial.print(ssid);
@@ -63,9 +65,19 @@ void loop() {
     }
     
     if (client.connected()){
-      int temperature = temp.getTemp(); 
+      temperature = temperature -8;
+      if(temperature >=22){
+      digitalWrite(D2, LOW);
+      Serial.println("LOW");
+      Serial.println(temperature);
+      }
+      else if(temperature<22){
+        digitalWrite(D2, HIGH);
+        Serial.println("HIGH");
+        Serial.println(temperature);
+        }
       Receive();
-      Send(temperature -3);
+      Send(temperature);
       delay(10000);
       client.loop();  
     }
@@ -92,17 +104,14 @@ void Send(int data){
     String tmp = (pub.payload_string());
     int temperature = temp.getTemp();
 
-    temperature = temperature-3;
+    temperature = temperature-8;
 
 
-      if (tmp.toInt() >= 25-3 || temperature >=25-3) {
+      if (tmp.toInt() >= 22 || temperature >=22) {
         client.publish(verwarming, "off" );
-             Serial.println(tmp + " " + temperature + " " + verwarming);
       }
       
-      else if (tmp.toInt() < 25-3 || temperature < 25-3) {
+      else if (tmp.toInt() < 22 || temperature < 22) {
       client.publish(verwarming, "on" );
-             Serial.println(tmp + " " + temperature + " " + verwarming);
       }   
   }
-  

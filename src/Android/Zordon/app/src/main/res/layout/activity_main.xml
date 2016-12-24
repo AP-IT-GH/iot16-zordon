@@ -67,5 +67,23 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:text="Known devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/Devices"
+        android:onClick="Devices"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kamertemperatuur: "
+        android:id="@+id/KamerTemp"
+        android:layout_marginTop="52dp"
+        android:layout_below="@+id/PraatButton"
+        android:layout_alignRight="@+id/SendMessage"
+        android:layout_alignEnd="@+id/SendMessage" />
 </RelativeLayout>

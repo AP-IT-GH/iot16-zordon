@@ -1,7 +1,9 @@
-#include <Thermistor.h>
+int switchPin = D2;
+boolean lastButton = LOW;
+boolean currentButton = LOW;
+
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-
 
 const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
 const char *pass =  "aphogeschool";
@@ -10,27 +12,35 @@ const char *mqtt_server = "m21.cloudmqtt.com";
 const int mqtt_port = 12452;
 const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
-const char *mqtt_client_name = "Weemo"; // Client connections cant have the same connection name
+const char *mqtt_client_name = "Weemo_deurbel"; // Client connections cant have the same connection name
 
-String thisDevice = "Android/kamertemperatuur"; // Subscribe to this topic and publish with this as context
+String thisDevice = "Android/Deurbel"; // Subscribe to this topic and publish with this as context
 String keuken = "Android/kitchen";
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
 
 #define BUFFER_SIZE 100
-Thermistor temp(0);
 
-
-void setup() {
-  pinMode(A0, OUTPUT);
-  // Setup console
-  Serial.begin(115200);
-  delay(10);
-  Serial.println();
-  Serial.println();
+void setup()
+{
+  pinMode(switchPin, INPUT);
+  Serial.begin(9600);
 }
-void loop() {
+
+boolean debounce(boolean last)
+{
+  boolean current = digitalRead(switchPin);
+  if (last != current)
+  {
+     delay(5);
+    current = digitalRead(switchPin);
+  }
+  return current;
+}
+
+void loop()
+{
     if (WiFi.status() != WL_CONNECTED) {
     Serial.print("Connecting to ");
     Serial.print(ssid);
@@ -45,7 +55,7 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     if (!client.connected()) {
       Serial.println("Connecting to MQTT server");
-      if (client.connect(MQTT::Connect("arduino")
+      if (client.connect(MQTT::Connect(mqtt_client_name)
                          .set_auth(mqtt_user, mqtt_pass))) {
         Serial.println("Connected to MQTT server");
         client.subscribe(thisDevice);
@@ -55,43 +65,29 @@ void loop() {
     }
     
     if (client.connected()){
-      int temperature = temp.getTemp(); 
-      Receive();
-      Send(temperature);
-      delay(10000);
-      client.loop();  
+    currentButton = debounce(lastButton);
+    
+    if (lastButton == LOW && currentButton == HIGH)
+    {
+    Serial.println("Button pressed");
+    Send("bel");
+    }
+    lastButton = currentButton;
+    client.loop();  
     }
   }
 }
-void Send(int data){
-
+  void Send(String data){
    Serial.println("published data");
    client.publish(thisDevice, String(data) );
-
   }
-
-
-  void Receive(){
-                    
+  
+  void Receive(){       
       Serial.println("Receiving");
       client.set_callback(callback);       
   }
-    
-      
-  
+ 
   void callback(const MQTT::Publish& pub) {
-    
-    String tmp = (pub.payload_string());
-    int temperature = temp.getTemp(); 
 
-      if (tmp.toInt() >= 24 || temperature >=24) {
-        client.publish(keuken, "on" );
-        
-      }
-      
-      else if (tmp.toInt() < 24 || temperature < 24) {
-      client.publish(keuken, "off" );
-        
-      }   
-  }
-  
+           
+}

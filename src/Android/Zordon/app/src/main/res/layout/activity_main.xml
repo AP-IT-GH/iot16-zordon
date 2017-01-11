@@ -74,28 +74,6 @@
         android:text="Kamertemperatuur: "
         android:id="@+id/KamerTemp"
         android:layout_marginTop="52dp"
-        android:layout_below="@+id/PraatButton"
-        android:layout_alignRight="@+id/SendMessage"
-        android:layout_alignEnd="@+id/SendMessage" />
-
-    <CheckedTextView
-        android:text="Verwarming: "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/checkedTextView"
-        android:layout_alignBottom="@+id/Verwarming"
-        android:layout_toLeftOf="@+id/SendMessage"
-        android:layout_toStartOf="@+id/SendMessage" />
-
-    <ToggleButton
-        android:text="ToggleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/Verwarming"
-        android:layout_above="@+id/Devices"
-        android:layout_alignRight="@+id/KamerTemp"
-        android:layout_alignEnd="@+id/KamerTemp"
-        android:layout_marginBottom="12dp"
-        android:onClick="SendMessage"/>
+        android:layout_below="@+id/PraatButton" />
 
 </RelativeLayout>

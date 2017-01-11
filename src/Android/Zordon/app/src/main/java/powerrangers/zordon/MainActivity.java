@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView lv;
 
-    String[] Places = {"keuken", "slaapkamer", "berging", "badkamer"};;
+    String[] Places = {"keuken", "slaapkamer", "berging", "badkamer", "deur"};;
 
     protected static final int RESULT_SPEECH = 1;
     private ImageButton PraatButton;
@@ -224,15 +224,15 @@ public class MainActivity extends AppCompatActivity {
             final MediaPlayer mp = MediaPlayer.create(this, R.raw.bell3);
             client.subscribe(topic, 0, new IMqttMessageListener() {
                 @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
+                public void messageArrived(final String topic, MqttMessage message) throws Exception {
                     final MqttMessage test = message;
                     System.out.println("Message: " + "Android/#" + " : " + new String(message.getPayload()));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             //sensor
-                            KamerTemp = (TextView) findViewById(R.id.KamerTemp);
-                            KamerTemp.setText("Kamertemperatuur: "+ new String(test.getPayload()));
+                                KamerTemp = (TextView) findViewById(R.id.KamerTemp);
+                                KamerTemp.setText("Kamertemperatuur: " + new String(test.getPayload()));
 
                             //Stopcontact
                             LatestMessage = (TextView) findViewById(R.id.SubMessage);
@@ -245,11 +245,11 @@ public class MainActivity extends AppCompatActivity {
                             if(new String(test.getPayload()).contains("bel")){
                                 mp.start();
                             }
+
                         }
                     });
                 }
             });
-
         } catch (MqttException ex){
             System.err.println("Exception whilst subscribing");
             ex.printStackTrace();
@@ -289,10 +289,15 @@ public class MainActivity extends AppCompatActivity {
                     else if (gesprokenpublish.contains(Places[1])) {topic = "Android/slaapkamer"; send = true;}
                     else if (gesprokenpublish.contains(Places[2])) {topic = "Android/berging"; send = true;}
                     else if (gesprokenpublish.contains(Places[3])) {topic = "Android/badkamer"; send = true;}
+                    else if (gesprokenpublish.contains(Places[4])) {topic = "Android/deurslot"; send = true;}
                     else{topic ="Not understood"; newmessage="Not understood"; send = false;}
 
                     if (gesprokenpublish.contains("aan")) {newmessage = "on"; send = true;}
                     else if (gesprokenpublish.contains("uit")) { newmessage = "off"; send = true;}
+
+                    else if (gesprokenpublish.contains("vast")) { newmessage = "on"; send = true;}
+                    else if (gesprokenpublish.contains("los")) { newmessage = "off"; send = true;}
+
                     else{topic ="Not understood"; newmessage="Not understood"; send = false;}
 
                     if(send){

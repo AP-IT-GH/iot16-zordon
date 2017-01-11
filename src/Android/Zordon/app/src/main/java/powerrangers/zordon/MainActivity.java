@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView KamerTemp;
     private TextView ConnectStatus;
     private Button Devices;
+    private ToggleButton Verwarming;
 
     Boolean send = true;
 
@@ -222,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     final MqttMessage test = message;
-
                     System.out.println("Message: " + "Android/#" + " : " + new String(message.getPayload()));
                     runOnUiThread(new Runnable() {
                         @Override

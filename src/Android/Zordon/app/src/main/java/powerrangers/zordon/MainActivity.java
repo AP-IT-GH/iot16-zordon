@@ -289,14 +289,14 @@ public class MainActivity extends AppCompatActivity {
                     else if (gesprokenpublish.contains(Places[1])) {topic = "Android/slaapkamer"; send = true;}
                     else if (gesprokenpublish.contains(Places[2])) {topic = "Android/berging"; send = true;}
                     else if (gesprokenpublish.contains(Places[3])) {topic = "Android/badkamer"; send = true;}
-                    else if (gesprokenpublish.contains(Places[4])) {topic = "Android/deurslot"; send = true;}
+                    else if (gesprokenpublish.contains(Places[4])) {topic = "Android/Deurslot"; send = true;}
                     else{topic ="Not understood"; newmessage="Not understood"; send = false;}
 
                     if (gesprokenpublish.contains("aan")) {newmessage = "on"; send = true;}
                     else if (gesprokenpublish.contains("uit")) { newmessage = "off"; send = true;}
 
-                    else if (gesprokenpublish.contains("vast")) { newmessage = "on"; send = true;}
-                    else if (gesprokenpublish.contains("los")) { newmessage = "off"; send = true;}
+                    else if (gesprokenpublish.contains("vast")) { newmessage = "vast"; send = true;}
+                    else if (gesprokenpublish.contains("los")) { newmessage = "los"; send = true;}
 
                     else{topic ="Not understood"; newmessage="Not understood"; send = false;}
 

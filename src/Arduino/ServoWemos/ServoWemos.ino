@@ -12,7 +12,7 @@ const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
 const char *mqtt_client_name = "Weemo_Slot"; // Client connections cant have the same connection name
 
-String thisDevice = "Deurslot"; // Subscribe to this topic and publish with this as context
+String thisDevice = "Android/Deurslot"; // Subscribe to this topic and publish with this as context
 int pos = 0;
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
@@ -89,13 +89,13 @@ void Send(String data){
     message.trim();
     Send(message);
       Serial.println(message);
-    if (message == "on") {
+    if (message == "los") {
       Serial.println("start turning open");
       myservo.writeMicroseconds(700); 
       
     }
     
-    else if (message == "off") {
+    else if (message == "vast") {
       myservo.writeMicroseconds(2300); 
       
     }

@@ -60,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     String password = "DtCGtuL2kVfk";
 
     String topic = "Android/#";
+
+    String kitchentopic = "kitchen";
+
+    String[] topics = {"Android/#", "kitchen"};
     String newmessage;
     int qos = 1;
     String clientId = MqttClient.generateClientId();
@@ -208,18 +212,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void SubscribeToTopic(){
         try {
-            client.subscribe(topic, 0, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    addToHistory("Subscribed!");
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    addToHistory("Failed to subscribe");
-                }
-            });
-
             //Subscribe to all topics on Android
             final MediaPlayer mp = MediaPlayer.create(this, R.raw.bell3);
             client.subscribe(topic, 0, new IMqttMessageListener() {
@@ -231,9 +223,24 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             //sensor
-                                KamerTemp = (TextView) findViewById(R.id.KamerTemp);
-                                KamerTemp.setText("Kamertemperatuur: " + new String(test.getPayload()));
+                            KamerTemp = (TextView) findViewById(R.id.KamerTemp);
+                            KamerTemp.setText("Kamertemperatuur: " + new String(test.getPayload()));
 
+                            if(new String(test.getPayload()).contains("bel")){
+                                mp.start();
+                            }
+                        }
+                    });
+                }
+            });
+            client.subscribe(kitchentopic, 0, new IMqttMessageListener() {
+                @Override
+                public void messageArrived(final String topic, MqttMessage message) throws Exception {
+                    final MqttMessage test = message;
+                    System.out.println("Message: " + "kitchen" + " : " + new String(message.getPayload()));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                             //Stopcontact
                             LatestMessage = (TextView) findViewById(R.id.SubMessage);
                             LatestMessage.setText("Latest message: "+ new String(test.getPayload()));
@@ -242,10 +249,6 @@ public class MainActivity extends AppCompatActivity {
                                 image.setImageResource(R.mipmap.on);
                             if(new String(test.getPayload()).contains("off"))
                                 image.setImageResource(R.mipmap.pixelbulbart);
-                            if(new String(test.getPayload()).contains("bel")){
-                                mp.start();
-                            }
-
                         }
                     });
                 }
@@ -285,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String gesprokenpublish = GesprokenZin.getText().toString();
 
-                    if (gesprokenpublish.contains(Places[0])) {topic = "Android/kitchen"; send = true;}
+                    if (gesprokenpublish.contains(Places[0])) {topic = "kitchen"; send = true;}
                     else if (gesprokenpublish.contains(Places[1])) {topic = "Android/slaapkamer"; send = true;}
                     else if (gesprokenpublish.contains(Places[2])) {topic = "Android/berging"; send = true;}
                     else if (gesprokenpublish.contains(Places[3])) {topic = "Android/badkamer"; send = true;}

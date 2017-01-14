@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     String topic = "Android/#";
 
-    String kitchentopic = "kitchen";
+    String kitchentopic = "Android";
 
     String[] topics = {"Android/#", "kitchen"};
     String newmessage;
@@ -245,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
                             LatestMessage = (TextView) findViewById(R.id.SubMessage);
                             LatestMessage.setText("Latest message: "+ new String(test.getPayload()));
                             ImageView image = (ImageView) findViewById(R.id.imageView);
-                            if(new String(test.getPayload()).contains("on"))
+                            if(new String(test.getPayload()).contains("kitchen on"))
                                 image.setImageResource(R.mipmap.on);
-                            if(new String(test.getPayload()).contains("off"))
+                            if(new String(test.getPayload()).contains("kitchen off"))
                                 image.setImageResource(R.mipmap.pixelbulbart);
                         }
                     });

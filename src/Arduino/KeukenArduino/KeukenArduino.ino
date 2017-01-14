@@ -1,9 +1,5 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include "HX711.h"
-
-HX711 scale;
-float weight;
 
 
 const char *ssid =  "Connectify-BOYD";   // cannot be longer than 32 characters!
@@ -13,10 +9,9 @@ const char *mqtt_server = "m21.cloudmqtt.com";
 const int mqtt_port = 12452;
 const char *mqtt_user = "xnkcayag";
 const char *mqtt_pass = "DtCGtuL2kVfk";
-const char *mqtt_client_name = "scale"; // Client connections cant have the same connection name
+const char *mqtt_client_name = "keuken"; // Client connections cant have the same connection name
 
-String thisDevice = "scale"; // Subscribe to this topic and publish with this as context
-bool manual;
+String thisDevice = "kitchen"; // Subscribe to this topic and publish with this as context
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
@@ -24,10 +19,6 @@ PubSubClient client(wclient, mqtt_server, mqtt_port);
 #define BUFFER_SIZE 100
 
 void setup() {
-  scale.begin(D2, D3);
-
-  scale.set_scale(-2081995.00/105);                      // this value is obtained by calibrating the scale with known weights; see the README for details
- 
 
   pinMode(D1, OUTPUT);
   // Setup console
@@ -65,38 +56,6 @@ void loop() {
     if (client.connected())
       client.loop();
   }
-  if (!manual) {
-weight = scale.get_units(1);
-  if (weight > 40) {
-    Send("heavy");
-    float testWeight = scale.get_units(30);
-    while (weight > testWeight -0.01 && weight < testWeight +0.01){
-      
-      Serial.print("Please stand still ");
-      Serial.println(weight);
-      Serial.print("  ");
-      Serial.println( testWeight); 
-      weight =  testWeight;
-       float testWeight = scale.get_units(1);
-    }
-    weight = scale.get_units(10);
-    char buffer[50];
-      String sendWeight = dtostrf(weight,2,2,buffer);
-    Send(sendWeight);
-    int i = 60000;
-    while (weight > 40) {
-      weight = scale.get_units(1);
-      i++;
-      if (i > 60000) {
-      Send("get off");
-      i=0;
-      }
-      
-    }
-    Send("light");
-  }
-
-  }
 
 
   Recieve();
@@ -123,50 +82,18 @@ void Send(String data){
   void callback(const MQTT::Publish& pub) {
     String message = (pub.payload_string());
     message.trim();
-  //  Send(message);
+    Send(message);
     Serial.println(message);
 
-    if (message == "measure") {
-
-      weight = scale.get_units(1);
-      char buffer[50];
-      String sendWeight = dtostrf(weight,2,2,buffer);
-
-      Send(sendWeight);
+    if (message == "on") {
+      digitalWrite(D1, HIGH);
       
     }
     
-    else if (message == "calibrate") {
-         Send("taring");
-      scale.set_scale();
-      delay(1000);
-      scale.tare();  
-      Send("get off");
-
-      delay(15000);
-
-      weight = -scale.get_units(1);
-     
-      scale.set_scale(weight/105);  
-       scale.tare();  
-             char buffer[50];
-      String sendWeight = dtostrf(weight,2,2,buffer);
-
-      Send("recalibrated at " + sendWeight );
-      
+    else if (message == "off") {
+      digitalWrite(D1, LOW);
       
     }
-       else if (message == "tare") {
-        scale.tare();  
-       }
-        else if (message == "manual") {
-        manual = true;
-        Send("manual");
-       }
-        else if (message == "auto") {
-        manual = false;
-        Send("auto");
-       }
 
 //Change the name of the device
     else if(message.indexOf("cN") >= 0) {

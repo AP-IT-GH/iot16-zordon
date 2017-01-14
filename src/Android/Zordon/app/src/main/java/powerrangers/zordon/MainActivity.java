@@ -2,6 +2,7 @@ package powerrangers.zordon;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telecom.Connection;
@@ -80,9 +81,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView GesprokenZin;
     private TextView LatestMessage;
     private TextView KamerTemp;
+    private TextView weight;
     private TextView ConnectStatus;
     private Button Devices;
     private ToggleButton Verwarming;
+    private TextToSpeech tts;
+
 
     Boolean send = true;
 
@@ -99,6 +103,15 @@ public class MainActivity extends AppCompatActivity {
         PraatButton = (ImageButton) findViewById(R.id.PraatButton);
         ConnectStatus = (TextView) findViewById(R.id.StatusLabel);
         lv = (ListView) findViewById(R.id.lv);
+
+
+        tts=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                }
+            }
+        });
 
         //String[] array = getIntent().getStringArrayExtra("lijst");
 
@@ -214,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             //Subscribe to all topics on Android
             final MediaPlayer mp = MediaPlayer.create(this, R.raw.bell3);
+            final MediaPlayer weightSound = MediaPlayer.create(this, R.raw.weightdetected);
             client.subscribe(topic, 0, new IMqttMessageListener() {
                 @Override
                 public void messageArrived(final String topic, MqttMessage message) throws Exception {
@@ -228,6 +242,18 @@ public class MainActivity extends AppCompatActivity {
 
                             if(new String(test.getPayload()).contains("bel")){
                                 mp.start();
+                            }
+                            if(new String(test.getPayload()).contains("dit weegt")) {
+                                weight = (TextView) findViewById(R.id.weight);
+                                weight.setText("Gewicht: " + new String(test.getPayload()));
+                                tts.speak(new String(test.getPayload()), TextToSpeech.QUEUE_FLUSH, null);
+
+
+                            }
+                            if(new String(test.getPayload()).contains("heavy")) {
+                                tts.speak("Welkom", TextToSpeech.QUEUE_FLUSH, null);
+
+
                             }
                         }
                     });
@@ -249,6 +275,8 @@ public class MainActivity extends AppCompatActivity {
                                 image.setImageResource(R.mipmap.on);
                             if(new String(test.getPayload()).contains("kitchen off"))
                                 image.setImageResource(R.mipmap.pixelbulbart);
+
+
                         }
                     });
                 }
@@ -325,6 +353,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void Devices(View view) {
         startActivity(new Intent(MainActivity.this, devices.class));
+
+    }
+    public void  calibrateScale(View view) {
+        try {
+            MqttMessage message = new MqttMessage("calibrate".getBytes());
+
+            client.publish("scale", message);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
 
     }
 }

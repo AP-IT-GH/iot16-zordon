@@ -58,16 +58,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <Button
-        android:text="Known devices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/Devices"
-        android:onClick="Devices"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,5 +65,35 @@
         android:id="@+id/KamerTemp"
         android:layout_marginTop="52dp"
         android:layout_below="@+id/PraatButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" "
+        android:id="@+id/weight"
+        android:layout_alignBaseline="@+id/KamerTemp"
+        android:layout_alignBottom="@+id/KamerTemp"
+        android:layout_toRightOf="@+id/GesprokenZin"
+        android:layout_toEndOf="@+id/GesprokenZin" />
+
+    <Button
+        android:text="Known devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Devices"
+        android:onClick="Devices"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/btnCalibrate"
+        android:layout_alignStart="@+id/btnCalibrate" />
+
+    <Button
+        android:text="Calibrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnCalibrate"
+        android:onClick="calibrateScale"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

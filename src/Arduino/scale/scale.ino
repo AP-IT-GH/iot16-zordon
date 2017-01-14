@@ -82,7 +82,7 @@ weight = scale.get_units(1);
     weight = scale.get_units(10);
     char buffer[50];
       String sendWeight = dtostrf(weight,2,2,buffer);
-    Send(sendWeight);
+    Send("dit weegt: " + sendWeight);
     int i = 60000;
     while (weight > 40) {
       weight = scale.get_units(1);
@@ -105,7 +105,7 @@ weight = scale.get_units(1);
 void Send(String data){
 
     Serial.print("published data");
-   client.publish("Android",thisDevice + " " + data );
+   client.publish("Android/" + thisDevice, data );
 
   }
 
@@ -137,11 +137,12 @@ void Send(String data){
     }
     
     else if (message == "calibrate") {
+      delay(5000);
          Send("taring");
       scale.set_scale();
       delay(1000);
       scale.tare();  
-      Send("get off");
+      Send("get off and wait");
 
       delay(15000);
 

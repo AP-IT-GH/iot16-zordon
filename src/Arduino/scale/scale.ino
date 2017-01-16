@@ -82,9 +82,14 @@ weight = scale.get_units(1);
     weight = scale.get_units(10);
     char buffer[50];
       String sendWeight = dtostrf(weight,2,2,buffer);
-    Send("dit weegt: " + sendWeight);
+      sendWeight.replace(".",",");
+    Send("dit weegt: " + sendWeight + "Kilogram");
     int i = 60000;
-    while (weight > 40) {
+   float  checkWeight = weight;
+    while (weight > checkWeight - checkWeight/2) {
+            Serial.print(weight);
+      Serial.print("  ");
+      Serial.println(checkWeight);
       weight = scale.get_units(1);
       i++;
       if (i > 60000) {
@@ -93,7 +98,10 @@ weight = scale.get_units(1);
       }
       
     }
-    Send("light");
+     Send("light");
+    delay(500);
+    scale.tare();
+   
   }
 
   }

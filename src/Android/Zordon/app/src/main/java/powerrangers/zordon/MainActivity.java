@@ -255,6 +255,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                             }
+                            if(new String(test.getPayload()).contains("light")) {
+                                tts.speak("Houdoe", TextToSpeech.QUEUE_FLUSH, null);
+
+
+                            }
                         }
                     });
                 }
